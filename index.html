@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yuzeras - Metroidvania Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Yuzeras is a Metroidvania focused on fast-paced combat, exploration, and an engaging story in a large interconnected world." />
+  <style>
+    :root {
+      --bg: #030712;
+      --bg-soft: #020617;
+      --bg-alt: #020617;
+      --accent: #38bdf8;
+      --accent-soft: #0ea5e9;
+      --accent-alt: #a855f7;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border-soft: rgba(148, 163, 184, 0.5);
+      --radius-lg: 18px;
+      --radius-xl: 28px;
+      --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.9);
+      --container: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background:
+        radial-gradient(circle at top left, #0b1120 0, #020617 45%, #000 100%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* HEADER */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.95),
+        rgba(15, 23, 42, 0.75),
+        transparent
+      );
+      border-bottom: 1px solid rgba(15, 23, 42, 1);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 0.25rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 14px;
+      background:
+        conic-gradient(from 180deg, #0ea5e9, #a855f7, #0f172a, #0ea5e9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-icon::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 30% 20%, #38bdf8, #0f172a 55%);
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .brand-name {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .brand-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .nav-links a {
+      position: relative;
+      padding-bottom: 2px;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 1px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--accent),
+        var(--accent-alt)
+      );
+      transition: width 0.15s ease-out;
+    }
+
+    .nav-links a:hover {
+      color: #f9fafb;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.9);
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.85),
+        rgba(15, 23, 42, 0.96)
+      );
+      padding: 0.45rem 1.1rem;
+      color: #e0f2fe;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 16px 40px rgba(56, 189, 248, 0.75);
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    }
+
+    .nav-cta span {
+      font-size: 1.1rem;
+      transform: translateY(1px);
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 55px rgba(56, 189, 248, 0.95);
+    }
+
+    @media (max-width: 720px) {
+      .nav-links {
+        display: none;
+      }
+    }
+
+    /* HERO */
+
+    .hero {
+      padding: 3.5rem 0 4rem;
+    }
+
+    @media (min-width: 900px) {
+      .hero {
+        padding: 4.5rem 0 5rem;
+      }
+    }
+
+    .hero-layout {
+      display: grid;
+      gap: 2.3rem;
+    }
+
+    @media (min-width: 900px) {
+      .hero-layout {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+        align-items: center;
+      }
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 0.9rem;
+    }
+
+    .hero-kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 5vw, 3.3rem);
+      margin: 0 0 0.6rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .hero-subtitle {
+      font-size: 1.02rem;
+      max-width: 36rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1.6rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.7rem;
+    }
+
+    .chip {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      color: var(--muted);
+      background:
+        radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), #020617);
+    }
+
+    .chip.main {
+      border-color: rgba(56, 189, 248, 0.9);
+      color: #e0f2fe;
+      background: radial-gradient(
+        circle at top left,
+        rgba(8, 47, 73, 0.9),
+        rgba(15, 23, 42, 0.96)
+      );
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      align-items: center;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      border: none;
+      padding: 0.9rem 1.7rem;
+      font-size: 0.96rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #ecfeff;
+      background: linear-gradient(
+        135deg,
+        var(--accent-soft),
+        var(--accent-alt)
+      );
+      box-shadow: 0 22px 60px rgba(8, 47, 73, 0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+        filter 0.12s ease-out;
+    }
+
+    .btn-primary span {
+      font-size: 1.18rem;
+      transform: translateY(1px);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow: 0 28px 75px rgba(8, 47, 73, 1);
+    }
+
+    .btn-outline {
+      border-radius: 999px;
+      padding: 0.8rem 1.4rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.12s ease-out, color 0.12s ease-out,
+        border-color 0.12s ease-out;
+    }
+
+    .btn-outline:hover {
+      background: rgba(15, 23, 42, 1);
+      color: #e5e7eb;
+      border-color: rgba(148, 163, 184, 1);
+    }
+
+    .hero-footnote {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .hero-panel {
+      border-radius: var(--radius-xl);
+      background:
+        radial-gradient(circle at 10% 0, rgba(56, 189, 248, 0.25), transparent 55%),
+        radial-gradient(circle at 100% 0, rgba(168, 85, 247, 0.25), transparent 55%),
+        linear-gradient(145deg, #020617, #020617);
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      padding: 1.4rem 1.4rem 1.2rem;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-panel-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #bae6fd;
+    }
+
+    .hero-panel-pill {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--muted);
+    }
+
+    .hero-panel-title {
+      font-size: 1.02rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .hero-panel-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 0.9rem;
+    }
+
+    .hero-panel-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      font-size: 0.78rem;
+      color: rgba(191, 219, 254, 0.85);
+    }
+
+    /* SECTION BASE */
+
+    section {
+      padding: 2.7rem 0;
+    }
+
+    @media (min-width: 900px) {
+      section {
+        padding: 3.2rem 0;
+      }
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1.4rem;
+      margin-bottom: 1.9rem;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 0.4rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .section-text {
+      max-width: 32rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* FEATURES */
+
+    .features-grid {
+      display: grid;
+      gap: 1.3rem;
+    }
+
+    @media (min-width: 960px) {
+      .features-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .feature {
+      border-radius: var(--radius-lg);
+      padding: 1.3rem 1.25rem 1.2rem;
+      background: radial-gradient(
+        circle at top left,
+        rgba(15, 23, 42, 0.95),
+        #020617
+      );
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.9);
+    }
+
+    .feature-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #bfdbfe;
+      margin-bottom: 0.7rem;
+    }
+
+    .feature-title {
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .feature-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 0.85rem;
+    }
+
+    .feature-meta {
+      font-size: 0.8rem;
+      color: rgba(191, 219, 254, 0.9);
+    }
+
+    /* GALLERY */
+
+    .gallery-grid {
+      display: grid;
+      gap: 0.9rem;
+      user-select: none;
+    }
+
+    @media (min-width: 720px) {
+      .gallery-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .gallery-item {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(15, 23, 42, 1);
+      background: #020617;
+      position: relative;
+      cursor: zoom-in;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1.02);
+      transition: transform 0.2s ease-out, filter 0.2s ease-out;
+      -webkit-user-drag: none;
+      user-drag: none;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+      filter: brightness(1.05);
+    }
+
+    .gallery-label {
+      position: absolute;
+      left: 0.6rem;
+      bottom: 0.55rem;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 0.72rem;
+      color: #e5e7eb;
+    }
+
+    /* FAQ */
+
+    .faq-layout {
+      display: grid;
+      gap: 1.3rem;
+    }
+
+    @media (min-width: 880px) {
+      .faq-layout {
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
+      }
+    }
+
+    .faq-list {
+      border-radius: var(--radius-lg);
+      padding: 1.15rem 1.05rem;
+      background: radial-gradient(
+        circle at top left,
+        rgba(8, 47, 73, 0.8),
+        #020617
+      );
+      border: 1px solid rgba(30, 64, 175, 0.9);
+      box-shadow: 0 18px 50px rgba(8, 47, 73, 0.95);
+    }
+
+    details {
+      border-radius: 12px;
+      padding: 0.7rem 0.8rem;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      margin-bottom: 0.6rem;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.9rem;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-toggle {
+      font-size: 1.1rem;
+      opacity: 0.7;
+      pointer-events: none; /* tüm satır tıklanabilir */
+    }
+
+    details[open] .faq-toggle {
+      transform: rotate(90deg);
+      transition: transform 0.14s ease-out;
+    }
+
+    details p {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .faq-side {
+      border-radius: var(--radius-lg);
+      padding: 1.15rem 1.05rem;
+      background: radial-gradient(
+        circle at top,
+        rgba(15, 23, 42, 0.95),
+        #020617
+      );
+      border: 1px dashed rgba(148, 163, 184, 0.7);
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .faq-side strong {
+      color: #e5e7eb;
+    }
+
+    /* INSTALL */
+
+    .install-card {
+      border-radius: 22px;
+      padding: 1.4rem 1.3rem;
+      background: radial-gradient(
+        circle at top left,
+        rgba(16, 185, 129, 0.75),
+        #022c22
+      );
+      border: 1px solid rgba(74, 222, 128, 0.8);
+      box-shadow: 0 22px 60px rgba(22, 163, 74, 0.9);
+      display: grid;
+      gap: 1.1rem;
+      color: #ecfdf3;
+    }
+
+    @media (min-width: 900px) {
+      .install-card {
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.9fr);
+      }
+    }
+
+    .install-steps {
+      margin: 0;
+      padding-left: 1.2rem;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .install-steps li + li {
+      margin-top: 0.55rem;
+    }
+
+    .install-note {
+      font-size: 0.86rem;
+      color: #bbf7d0;
+      margin-bottom: 0.4rem;
+    }
+
+    .password-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.38rem 0.8rem;
+      border-radius: 999px;
+      border: 1px dashed rgba(187, 247, 208, 0.95);
+      background: rgba(6, 95, 70, 0.86);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .password-pill span.pass {
+      font-family: ui-monospace, Menlo, Monaco, "SF Mono", Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.82rem;
+    }
+
+    .password-status {
+      font-size: 0.78rem;
+      margin-top: 0.4rem;
+      color: #bbf7d0;
+    }
+
+    /* FOOTER */
+
+    footer {
+      margin-top: auto;
+      padding: 1.9rem 0 2.1rem;
+      border-top: 1px solid #020617;
+      background:
+        radial-gradient(circle at top, #020617, #000);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.9rem;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .footer-links a {
+      opacity: 0.8;
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+      color: #e5e7eb;
+    }
+
+    /* MODALS GENEL */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at top,
+        rgba(15, 23, 42, 0.96),
+        rgba(15, 23, 42, 0.98)
+      );
+      backdrop-filter: blur(16px);
+    }
+
+    .modal-dialog {
+      position: relative;
+      z-index: 1;
+      width: min(420px, 94vw);
+      border-radius: 22px;
+      padding: 1.4rem 1.35rem 1.25rem;
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.28),
+        #020617
+      );
+      border: 1px solid rgba(56, 189, 248, 0.9);
+      box-shadow: 0 26px 80px rgba(15, 23, 42, 0.98);
+      color: #e5e7eb;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 0.7rem;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      border: none;
+      padding: 0.15rem;
+      border-radius: 999px;
+      background: transparent;
+      color: rgba(148, 163, 184, 0.95);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .modal-close:hover {
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .modal-body {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .modal-field {
+      margin-bottom: 0.95rem;
+    }
+
+    .modal-label {
+      display: block;
+      font-size: 0.78rem;
+      margin-bottom: 0.3rem;
+      color: #e0f2fe;
+    }
+
+    .modal-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      padding: 0.55rem 0.9rem;
+      background: rgba(15, 23, 42, 0.98);
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .modal-input:focus {
+      border-color: rgba(56, 189, 248, 0.95);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      padding: 0.5rem 1.1rem;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      color: #e5e7eb;
+      border-color: rgba(148, 163, 184, 1);
+    }
+
+    .btn-solid {
+      border-radius: 999px;
+      padding: 0.5rem 1.25rem;
+      border: none;
+      background: linear-gradient(
+        135deg,
+        var(--accent-soft),
+        var(--accent-alt)
+      );
+      color: #f9fafb;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      box-shadow: 0 16px 40px rgba(8, 47, 73, 1);
+    }
+
+    .btn-solid:hover {
+      filter: brightness(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="wrap">
+        <nav class="nav">
+          <div class="brand">
+            <div class="brand-icon"></div>
+            <div class="brand-title">
+              <span class="brand-name">YUZERAS</span>
+              <span class="brand-sub">METROIDVANIA</span>
+            </div>
+          </div>
+
+          <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#faq">FAQ</a>
+            <a href="#install">How to install</a>
+          </div>
+
+          <button type="button" class="nav-cta" id="navDownloadBtn">
+            <span>⬇</span>
+            Download
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="top">
+        <div class="wrap">
+          <div class="hero-layout">
+            <div>
+              <div class="hero-kicker">
+                <div class="hero-kicker-dot"></div>
+                <span>Welcome to</span>
+              </div>
+              <h1 class="hero-title">Yuzeras</h1>
+              <p class="hero-subtitle">
+                Yuzeras is a Metroidvania focused on fast-paced combat, exploration,
+                and an engaging story. It features a brand new protagonist and a
+                large interconnected world. The Queen of Light must stop the
+                destruction of existence by challenging the Supreme God Chaos while
+                seeking the location of their nemesis.
+              </p>
+
+              <div class="hero-tags">
+                <span class="chip main">Metroidvania</span>
+                <span class="chip">Fast-paced combat</span>
+                <span class="chip">Story-driven</span>
+                <span class="chip">Windows PC</span>
+              </div>
+
+              <div class="hero-actions">
+                <button type="button" class="btn-primary" id="heroDownloadBtn">
+                  <span>⬇</span>
+                  Download Yuzeras
+                </button>
+                <a href="#gallery" class="btn-outline">
+                  <span>▶</span>
+                  View gallery
+                </a>
+              </div>
+
+              <div class="hero-footnote">
+                Runs on low-end PCs · No account required
+              </div>
+            </div>
+
+            <aside class="hero-panel">
+              <div class="hero-panel-header">
+                <div>
+                  <div class="hero-panel-label">World overview</div>
+                  <div class="hero-panel-title">A new land in the franchise</div>
+                </div>
+                <div class="hero-panel-pill">Single player & co-op</div>
+              </div>
+              <div class="hero-panel-body">
+                Explore a massive, handcrafted map full of secrets, side quests and
+                powerful enemies. Unlock abilities, meet allies, and uncover the
+                mysteries of a land never seen before.
+              </div>
+              <div class="hero-panel-meta">
+                <span>Non-linear progression · Hidden areas</span>
+                <span>Beta · 2025</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section id="features">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-label">Game pillars</div>
+              <h2 class="section-title">Metroidvania first and foremost</h2>
+            </div>
+            <p class="section-text">
+              You'll explore new areas interconnected in a large world map full of
+              secrets, secondary quests, and evils to defeat. As the Queen of
+              Light, you must uncover the mysteries of a land never seen before in
+              the franchise and gather allies to stop the imminent collapse of
+              space and time.
+            </p>
+          </div>
+
+          <div class="features-grid">
+            <article class="feature">
+              <div class="feature-tag">Exploration</div>
+              <h3 class="feature-title">A huge interconnected world</h3>
+              <p class="feature-body">
+                Discover new biomes, shortcuts, secrets and optional zones as you
+                gain abilities. The variety of settings is enormous, with an art
+                direction that gives each area a unique personality.
+              </p>
+              <div class="feature-meta">
+                Secret rooms · Optional quests · Hidden bosses
+              </div>
+            </article>
+
+            <article class="feature">
+              <div class="feature-tag">Combat</div>
+              <h3 class="feature-title">Fast-paced gameplay</h3>
+              <p class="feature-body">
+                Every Metroidvania focused on combat and exploration needs a fast-paced
+                combat system and tons of passive and offensive skills. Yuzeras
+                delivers polished controls, brand-new abilities and exclusive
+                weapons for the Queen of Light.
+              </p>
+              <div class="feature-meta">
+                Skill-based · Multiple builds · Responsive controls
+              </div>
+            </article>
+
+            <article class="feature">
+              <div class="feature-tag">Progress</div>
+              <h3 class="feature-title">Level design and progress</h3>
+              <p class="feature-body">
+                Intuitive level design lets you enjoy precise movement and freedom
+                to explore alternative routes. As you grow stronger, confront final
+                bosses that promise a visual, sound, and gameplay spectacle.
+              </p>
+              <div class="feature-meta">
+                Non-linear routes · Spectacular boss fights
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- GALLERY -->
+      <section id="gallery">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-label">Gallery</div>
+              <h2 class="section-title">Screenshots</h2>
+            </div>
+            <p class="section-text">
+              A quick look at some of the environments, combat encounters and key
+              moments you'll find while exploring Yuzeras.
+            </p>
+          </div>
+
+          <div class="gallery-grid">
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/11f0165dfe329d8a38fd39eb780cf397e9243022/ss_11f0165dfe329d8a38fd39eb780cf397e9243022.600x338.jpg?t=1749474161" alt="Underwater area" />
+              <span class="gallery-label">01</span>
+            </div>
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/a65c38635b78f94cd8a425e6f14560d5311bb906/ss_a65c38635b78f94cd8a425e6f14560d5311bb906.600x338.jpg?t=1749474161" alt="Cathedral-like structure" />
+              <span class="gallery-label">02</span>
+            </div>
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/9c849f5631f68aab7d016f87d2bd3a1be95b84b9/ss_9c849f5631f68aab7d016f87d2bd3a1be95b84b9.600x338.jpg?t=1749474161" alt="Dungeon area" />
+              <span class="gallery-label">03</span>
+            </div>
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/01261a80ac43b505d6604ef0e8723c4cca08878f/ss_01261a80ac43b505d6604ef0e8723c4cca08878f.600x338.jpg?t=1749474161" alt="Boss arena" />
+              <span class="gallery-label">04</span>
+            </div>
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/5d8dd194544943f8e0f9f6604e5ac5cab970bdbb/ss_5d8dd194544943f8e0f9f6604e5ac5cab970bdbb.600x338.jpg?t=1749474161" alt="Forest area" />
+              <span class="gallery-label">05</span>
+            </div>
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/d94efd63b2864467ffe6a7437657ca7b14a1f965/ss_d94efd63b2864467ffe6a7437657ca7b14a1f965.600x338.jpg?t=1749474161" alt="Forest battle" />
+              <span class="gallery-label">06</span>
+            </div>
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/cb4b488870fbbed93c5effb18456bed045025ea2/ss_cb4b488870fbbed93c5effb18456bed045025ea2.600x338.jpg?t=1749474161" alt="Cave area" />
+              <span class="gallery-label">07</span>
+            </div>
+            <div class="gallery-item">
+              <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2710920/11f0165dfe329d8a38fd39eb780cf397e9243022/ss_11f0165dfe329d8a38fd39eb780cf397e9243022.600x338.jpg?t=1749474161" alt="Underwater battle" />
+              <span class="gallery-label">08</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-label">FAQ</div>
+              <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+            <p class="section-text">
+              A quick overview of the most common questions about multiplayer,
+              requirements, platforms and safety when downloading the game.
+            </p>
+          </div>
+
+          <div class="faq-layout">
+            <div class="faq-list">
+              <details open>
+                <summary>
+                  <span>Is there a multiplayer mode in Yuzeras?</span>
+                  <span class="faq-toggle">➤</span>
+                </summary>
+                <p>
+                  Yes, Yuzeras supports co-op multiplayer mode. You can play with your friends! :)
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  <span>What are the system requirements?</span>
+                  <span class="faq-toggle">➤</span>
+                </summary>
+                <p>
+                  Yuzeras can run on low-end PCs. Minimum requirements: Windows 10, Intel i3 or equivalent processor, 4 GB RAM, integrated graphics, and 1 GB free storage space.
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  <span>Which platforms can I play the game on?</span>
+                  <span class="faq-toggle">➤</span>
+                </summary>
+                <p>
+                  Currently, Yuzeras is only available for Windows PCs. We're working on Mac and Linux support, but no release date has been set yet.
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  <span>Will the game receive updates?</span>
+                  <span class="faq-toggle">➤</span>
+                </summary>
+                <p>
+                  Yes! Yuzeras will receive regular updates with new levels, characters, and features. Stay tuned!
+                </p>
+              </details>
+
+              <details>
+                <summary>
+                  <span>I'm getting a Windows SmartScreen warning, is this file safe?</span>
+                  <span class="faq-toggle">➤</span>
+                </summary>
+                <p>
+                  This is a default security feature that pops up when a file isn't digitally signed or comes from an unrecognized source. If you downloaded Yuzeras from this official page, the file is safe. Click “More Info” → “Run Anyway” to continue.
+                </p>
+              </details>
+            </div>
+
+            <aside class="faq-side">
+              <strong>Need support?</strong><br />
+              If you encounter issues, bugs, or crashes, feel free to contact us.
+              <br /><br />
+              <strong>Email</strong>: support@yuzeras.com<br />
+              (Change this to your actual support address if needed.)
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW TO INSTALL -->
+      <section id="install">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-label">How to Install</div>
+              <h2 class="section-title">How to Install Yuzeras</h2>
+            </div>
+            <p class="section-text">
+              How to set up Yuzeras in just a few steps for players who aren't
+              familiar with installing games on Windows.
+            </p>
+          </div>
+
+          <div class="install-card">
+            <div>
+              <ol class="install-steps">
+                <li>
+                  <strong>Download the game.</strong><br />
+                  Download the compressed file <code>GameSetup</code> to your computer.
+                </li>
+                <li>
+                  <strong>Extract the archive.</strong><br />
+                  Right-click on the <code>GameSetup</code> file and choose <em>Extract</em>
+                  (use 7-Zip if you are not on Windows 11). After extraction you’ll see
+                  a folder that contains <code>GameSetup</code>.
+                </li>
+                <li>
+                  <strong>Enter the password (if prompted).</strong><br />
+                  If the .zip file asks for a password, use:
+                  <code>BETA2025</code>.
+                </li>
+                <li>
+                  <strong>Install and play.</strong><br />
+                  Double-click <code>GameSetup</code> and follow the on-screen instructions.
+                  When the installation finishes, launch the game using the shortcut
+                  on your Desktop or from the Start Menu.
+                </li>
+              </ol>
+            </div>
+            <div>
+              <p class="install-note">
+                If your build is password-protected, players can copy it with one click:
+              </p>
+              <button type="button" class="password-pill" id="copyPasswordBtn">
+                Password: <span class="pass" id="passwordText">BETA2025</span> 📋
+              </button>
+              <div class="password-status" id="passwordCopyStatus"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="wrap">
+        <div class="footer-inner">
+          <span>Copyright © 2025 - All Rights Reserved by Swangy Studios.</span>
+          <div class="footer-links">
+            <a href="#top">Back to top</a>
+            <a href="#faq">FAQ</a>
+            <a href="#install">Install guide</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1: Who invited you? -->
+  <div class="modal" id="inviteModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title">Welcome to Yuzeras!</div>
+        <button type="button" class="modal-close" data-close-modal="inviteModal">×</button>
+      </div>
+      <div class="modal-body">
+        Who invited you to download Yuzeras?
+      </div>
+      <div class="modal-field">
+        <label for="inviteInput" class="modal-label">
+          Friend / creator name (optional)
+        </label>
+        <input
+          id="inviteInput"
+          class="modal-input"
+          type="text"
+          placeholder="Type a name or leave empty"
+        />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" data-close-modal="inviteModal">
+          Cancel
+        </button>
+        <button type="button" class="btn-solid" id="inviteContinueBtn">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: Choose version -->
+  <div class="modal" id="versionModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title">Choose your version</div>
+        <button type="button" class="modal-close" data-close-modal="versionModal">×</button>
+      </div>
+      <div class="modal-body">
+        Select which version of Yuzeras you’d like to download:
+      </div>
+      <div class="modal-actions" style="justify-content:flex-start;flex-wrap:wrap;gap:0.7rem;">
+        <button type="button" class="btn-solid" id="downloadNewBtn">
+          Download latest version
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: Thank you -->
+  <div class="modal" id="successModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title">Thank you!</div>
+        <button type="button" class="modal-close" data-close-modal="successModal">×</button>
+      </div>
+      <div class="modal-body">
+        Your download has started successfully.<br />
+        Enjoy playing Yuzeras!
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-solid" data-close-modal="successModal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Image preview -->
+  <div class="modal" id="imageModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" style="max-width:800px;">
+      <div class="modal-header">
+        <div class="modal-title">Screenshot</div>
+        <button type="button" class="modal-close" data-close-modal="imageModal">×</button>
+      </div>
+      <div class="modal-body" style="margin-bottom:0;">
+        <img id="imageModalImg" src="" alt="Screenshot preview"
+             style="width:100%;border-radius:14px;pointer-events:none;-webkit-user-drag:none;user-drag:none;" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ====== CONFIG ====== */
+
+    // İNDİRME LİNKİN
+    const NEW_VERSION_URL = "/file/IMG_3097.webp"; // dosya adın neyse onu yaz
+
+    // FRONTEND'İN GÖRECEĞİ TEK ADRES → SENİN BACKEND ENDPOINT'İN
+    const BACKEND_ENDPOINT = "/api/download";
+
+    /* ====== MODAL & BACKEND LOGIC ====== */
+
+    const heroDownloadBtn   = document.getElementById("heroDownloadBtn");
+    const navDownloadBtn    = document.getElementById("navDownloadBtn");
+    const inviteModal       = document.getElementById("inviteModal");
+    const versionModal      = document.getElementById("versionModal");
+    const successModal      = document.getElementById("successModal");
+    const imageModal        = document.getElementById("imageModal");
+    const imageModalImg     = document.getElementById("imageModalImg");
+    const inviteContinueBtn = document.getElementById("inviteContinueBtn");
+    const downloadNewBtn    = document.getElementById("downloadNewBtn");
+    const inviteInput       = document.getElementById("inviteInput");
+
+    const passwordBtn        = document.getElementById("copyPasswordBtn");
+    const passwordText       = document.getElementById("passwordText");
+    const passwordCopyStatus = document.getElementById("passwordCopyStatus");
+
+    let inviteName = "";
+
+    function openModal(el) {
+      if (!el) return;
+      el.classList.add("open");
+      el.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(el) {
+      if (!el) return;
+      el.classList.remove("open");
+      el.setAttribute("aria-hidden", "true");
+    }
+
+    function closeAllModals() {
+      [inviteModal, versionModal, successModal, imageModal].forEach(closeModal);
+    }
+
+    // BACKEND'E POST atan fonksiyon
+    async function sendDownloadToBackend(payload) {
+      if (!BACKEND_ENDPOINT) return;
+      try {
+        await fetch(BACKEND_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+      } catch (err) {
+        console.error("Backend error:", err);
+      }
+    }
+
+    function startDownloadNewVersion() {
+      const payload = {
+        version: "new",
+        invitedBy: inviteName || null,
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        timestamp: new Date().toISOString(),
+      };
+
+      sendDownloadToBackend(payload);
+
+      if (NEW_VERSION_URL && NEW_VERSION_URL !== "#") {
+        window.location.href = NEW_VERSION_URL;
+      }
+
+      closeAllModals();
+      openModal(successModal);
+    }
+
+    // Download butonları
+    [heroDownloadBtn, navDownloadBtn].forEach((btn) => {
+      if (btn) {
+        btn.addEventListener("click", () => openModal(inviteModal));
+      }
+    });
+
+    if (inviteContinueBtn) {
+      inviteContinueBtn.addEventListener("click", () => {
+        inviteName = inviteInput ? inviteInput.value.trim() : "";
+        closeModal(inviteModal);
+        openModal(versionModal);
+      });
+    }
+
+    if (downloadNewBtn) {
+      downloadNewBtn.addEventListener("click", startDownloadNewVersion);
+    }
+
+    // Modal kapatma butonları
+    document.querySelectorAll("[data-close-modal]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-close-modal");
+        const modal = document.getElementById(id);
+        closeModal(modal);
+      });
+    });
+
+    // ESC ile kapatma
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeAllModals();
+      }
+    });
+
+    // Password kopyalama
+    if (passwordBtn && passwordText && passwordCopyStatus) {
+      passwordBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(passwordText.textContent.trim());
+          passwordCopyStatus.textContent = "Password copied to clipboard.";
+        } catch (err) {
+          passwordCopyStatus.textContent = "Couldn't copy, please copy manually.";
+        }
+        setTimeout(() => {
+          passwordCopyStatus.textContent = "";
+        }, 2500);
+      });
+    }
+
+    // GALERİ: resme tıklayınca büyütülmüş modal aç
+    document.querySelectorAll(".gallery-grid img").forEach((img) => {
+      img.addEventListener("click", () => {
+        if (!imageModal || !imageModalImg) return;
+        imageModalImg.src = img.src;
+        openModal(imageModal);
+      });
+
+      img.addEventListener("dragstart", (e) => e.preventDefault());
+    });
+
+    // GALERİ GÜVENLİK: sağ tık engelle
+    document.addEventListener("contextmenu", (e) => {
+      if (e.target.tagName === "IMG" || e.target.closest(".gallery-grid")) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
